@@ -122,3 +122,4 @@ class UserAPI:
     api.add_resource(_CRUD, '/')
     api.add_resource(_Security, '/authenticate')
     
+    

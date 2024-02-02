@@ -219,7 +219,7 @@ def initUsers():
                 '''add user/post data to table'''
                 user.create()
             except IntegrityError:
-                '''fails with bad or duplicate data'''
+                '''fails with bad or duplicate   data'''
                 db.session.remove()
                 print(f"Records exist, duplicate email, or error: {user.uid}")
             
