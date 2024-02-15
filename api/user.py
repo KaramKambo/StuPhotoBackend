@@ -16,7 +16,7 @@ class UserAPI:
     class _CRUD(Resource):  # User API operation for Create, Read.  THe Update, Delete methods need to be implemeented
         
         def post(self): # Create method
-            ''' Read data from json body '''
+            ''' Read data for json body '''
             body = request.get_json()
             
             ''' Avoid garbage in, error checking '''
@@ -117,38 +117,10 @@ class UserAPI:
                         "data": None
                 }, 500
 
-    class _PhotoUpload(Resource):
-        @token_required
-        def post(self, current_user):
-            try:
-                # Get user ID from current_user
-                user_id = current_user.get('_uid')
-
-                # Get base64 photo data from request body
-                body = request.get_json()
-                photo_base64 = body.get('photo_base64')
-                if photo_base64 is None:
-                    return {'message': 'Photo is missing'}, 400
-
-                # Update user's photo in the database
-                user = User.query.filter_by(_uid=user_id).first()
-                if user:
-                    user.photo_base64 = photo_base64
-                    user.save()
-                    return {'message': 'Photo uploaded successfully'}, 200
-                else:
-                    return {'message': 'User not found'}, 404
-            except Exception as e:
-                return {
-                    "message": "Something went wrong!",
-                    "error": str(e),
-                    "data": None
-                }, 500
             
     # building RESTapi endpoint
     api.add_resource(_CRUD, '/')
     api.add_resource(_Security, '/authenticate')
-    api.add_resource(_PhotoUpload, '/upload_photo')
 
 
     
