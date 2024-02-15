@@ -31,15 +31,10 @@ class UserAPI:
             # look for password and dob
             password = body.get('password')
             dob = body.get('dob')
-            # validate photo
-            photo_base64 = body.get('photo_base64')
-            if photo_base64 is None:
-                return {'message': 'Photo is missing'}, 400
 
             ''' #1: Key code block, setup USER OBJECT '''
             uo = User(name=name, 
-                      uid=uid,
-                      photo_base64=photo_base64)
+                      uid=uid)
             
             ''' Additional garbage error checking '''
             # set password if provided
@@ -122,10 +117,39 @@ class UserAPI:
                         "data": None
                 }, 500
 
+    class _PhotoUpload(Resource):
+        @token_required
+        def post(self, current_user):
+            try:
+                # Get user ID from current_user
+                user_id = current_user.get('_uid')
+
+                # Get base64 photo data from request body
+                body = request.get_json()
+                photo_base64 = body.get('photo_base64')
+                if photo_base64 is None:
+                    return {'message': 'Photo is missing'}, 400
+
+                # Update user's photo in the database
+                user = User.query.filter_by(_uid=user_id).first()
+                if user:
+                    user.photo_base64 = photo_base64
+                    user.save()
+                    return {'message': 'Photo uploaded successfully'}, 200
+                else:
+                    return {'message': 'User not found'}, 404
+            except Exception as e:
+                return {
+                    "message": "Something went wrong!",
+                    "error": str(e),
+                    "data": None
+                }, 500
             
     # building RESTapi endpoint
     api.add_resource(_CRUD, '/')
     api.add_resource(_Security, '/authenticate')
+    api.add_resource(_PhotoUpload, '/upload_photo')
+
 
     
     
