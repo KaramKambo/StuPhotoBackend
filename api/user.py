@@ -16,7 +16,7 @@ class UserAPI:
     class _CRUD(Resource):  # User API operation for Create, Read.  THe Update, Delete methods need to be implemeented
         
         def post(self): # Create method
-            ''' Read data for json body '''
+            ''' Read data from json body '''
             body = request.get_json()
             
             ''' Avoid garbage in, error checking '''
@@ -31,10 +31,15 @@ class UserAPI:
             # look for password and dob
             password = body.get('password')
             dob = body.get('dob')
+            # validate photo
+            photo_base64 = body.get('photo_base64')
+            if photo_base64 is None:
+                return {'message': 'Photo is missing'}, 400
 
             ''' #1: Key code block, setup USER OBJECT '''
             uo = User(name=name, 
-                      uid=uid)
+                      uid=uid,
+                      photo_base64=photo_base64)
             
             ''' Additional garbage error checking '''
             # set password if provided
@@ -121,5 +126,6 @@ class UserAPI:
     # building RESTapi endpoint
     api.add_resource(_CRUD, '/')
     api.add_resource(_Security, '/authenticate')
+
     
     
